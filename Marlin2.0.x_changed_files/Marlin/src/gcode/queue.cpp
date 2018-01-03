@@ -371,7 +371,8 @@ inline void get_serial_commands() {
             LCD_MESSAGEPGM(MSG_INFO_COMPLETED_PRINTS);
             #if ENABLED(PRINTER_EVENT_LEDS)
               #if ENABLED(NEOPIXEL_SLAVE_LED)
-                leds.set_state(NEOPIXEL_STATE_PRINTING);
+                leds.set_state(NEOPIXEL_STATE_IDLE);
+                leds.progress_lock = true;
               #else
                 leds.set_green();
                 #if HAS_RESUME_CONTINUE

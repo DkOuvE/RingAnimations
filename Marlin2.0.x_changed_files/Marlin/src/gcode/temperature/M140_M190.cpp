@@ -133,6 +133,7 @@ void GcodeSuite::M190() {
         if (!wants_to_cool) {
           #if ENABLED(NEOPIXEL_SLAVE_LED) && DISABLED(NEOPIXEL_IS_SEQUENTIAL)
             leds.set_state(NEOPIXEL_STATE_BED_HEATUP,temp,target_temp,BED_MAXTEMP);
+            leds.progress_lock = true;
           #else
             const uint8_t red = map(constrain(temp, start_temp, target_temp), start_temp, target_temp, 0, 255);
             if (red != old_red) {
@@ -176,7 +177,7 @@ void GcodeSuite::M190() {
     }
 
   } while (wait_for_heatup && TEMP_BED_CONDITIONS);
-
+  leds.progress_lock = false;
   if (wait_for_heatup) LCD_MESSAGEPGM(MSG_BED_DONE);
   #if DISABLED(BUSY_WHILE_HEATING)
     KEEPALIVE_STATE(IN_HANDLER);

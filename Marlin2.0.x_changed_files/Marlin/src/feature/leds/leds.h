@@ -165,10 +165,10 @@ public:
       ) {
       set_pixel(MakeLEDColor(r, g, b, w, i), p);
       }
-  #endif
-  
-  #if ENABLED(NEOPIXEL_SLAVE_LED)
+
     static void set_state(uint8_t state, uint16_t currentTemp=0, uint16_t targetTemp=0, uint16_t maxTemp=255);
+    static void set_progress(uint8_t progress);
+    bool progress_lock;
   #endif
   
   static void set_white();

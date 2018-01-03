@@ -27,12 +27,15 @@
 #include "../../inc/MarlinConfig.h"
 
 #if ENABLED(NEOPIXEL_SLAVE_LED)
+  #include "leds.h"
   #include "neopixel_slave.h"
-
+  
+  
   uint8_t neopixel_i2c_buffer[21];
   uint8_t neopixel_i2c_buffer_length=0;
   
-void setup_neopixel_slave(uint16_t maxTempBed, uint16_t maxTempHotend, uint8_t stripNumber){   
+void setup_neopixel_slave(uint16_t maxTempBed, uint16_t maxTempHotend, uint8_t stripNumber){ 
+  leds.progress_lock = true;
   neopixel_i2c_buffer[0]='i';
   neopixel_i2c_buffer[1]=0;
   neopixel_i2c_buffer[2]=highByte(maxTempBed);

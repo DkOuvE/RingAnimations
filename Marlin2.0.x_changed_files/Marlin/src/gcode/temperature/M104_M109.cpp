@@ -192,6 +192,7 @@ void GcodeSuite::M109() {
           #if ENABLED(NEOPIXEL_SLAVE_LED) && DISABLED(NEOPIXEL_IS_SEQUENTIAL)
             uint16_t maxtemp[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_MAXTEMP, HEATER_1_MAXTEMP, HEATER_2_MAXTEMP, HEATER_3_MAXTEMP, HEATER_4_MAXTEMP);
             leds.set_state(NEOPIXEL_STATE_HOTEND_HEATUP,temp,target_temp,maxtemp[target_extruder]);
+            leds.progress_lock = true;
           #else
             const uint8_t blue = map(constrain(temp, start_temp, target_temp), start_temp, target_temp, 255, 0);
             if (blue != old_blue) {
@@ -235,7 +236,7 @@ void GcodeSuite::M109() {
     }
 
   } while (wait_for_heatup && TEMP_CONDITIONS);
-
+  leds.progress_lock = false;
   if (wait_for_heatup) {
     LCD_MESSAGEPGM(MSG_HEATING_COMPLETE);
     #if ENABLED(PRINTER_EVENT_LEDS) && DISABLED(NEOPIXEL_SLAVE_LED)

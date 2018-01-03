@@ -597,7 +597,9 @@ static void lcd_implementation_status_screen() {
           (uint16_t)((PROGRESS_BAR_WIDTH - 2) * progress_bar_percent * 0.01), 2 - (TALL_FONT_CORRECTION)
         );
       #if ENABLED(NEOPIXEL_SLAVE_LED)
-        leds.set_progress(progress_bar_percent);
+        if (leds.progress_lock==false) {
+          leds.set_progress(progress_bar_percent);
+        }
       #endif
       //
       // SD Percent Complete

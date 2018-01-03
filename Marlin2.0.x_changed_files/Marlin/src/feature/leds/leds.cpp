@@ -99,7 +99,7 @@ void LEDLights::set_color(const LEDColor &incol
   #endif
   
   #if ENABLED(NEOPIXEL_SLAVE_LED)
-
+    static bool progress_lock;
     static uint8_t nextLed = 0;
     if (pixel==0) {
       if (!isSequence)
@@ -218,6 +218,10 @@ void LEDLights::set_color(const LEDColor &incol
         break;
     };
   };
+  
+  void LEDLights::set_progress(uint8_t progress){
+    set_neopixel_progress(progress, NEOPIXEL_STATE_PRINTING); 
+  }
 #endif
   
 
