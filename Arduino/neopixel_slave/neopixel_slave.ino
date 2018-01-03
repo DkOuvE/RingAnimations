@@ -12,7 +12,7 @@
 #include <NeoPixelBus.h>
 #include <NeoPixelAnimator.h>
 
-// #define DEBUG  //Enable to get serial debugging 
+#define DEBUG  //Enable to get serial debugging 
 
 const uint16_t PixelCount = 25; // make sure to set this to the number of pixels in your strip
 const uint8_t PixelPin = 6;  // make sure to set this to the correct pin
@@ -84,10 +84,14 @@ void loop() {
     Serial.println(temperatureHotend,DEC);
     Serial.print("Temp_target_hotend: ");
     Serial.println(targetHotend,DEC);
+    Serial.print("Temp_max_hotend: ");
+    Serial.println(maxHotend,DEC);    
     Serial.print("Temp_bed: ");
     Serial.println(temperatureBed,DEC);
     Serial.print("Temp_target_bed: ");
     Serial.println(targetBed,DEC);
+    Serial.print("Temp_max_bed: ");
+    Serial.println(maxBed,DEC);
     Serial.print("Printer State: ");
     Serial.println(printerState,DEC);
     Serial.println("************************************");
@@ -173,54 +177,52 @@ void receiveEvent(int howMany) {
   Serial.println("Reading...");
   while(Wire.available()) { // loop through all but the last
     Wire.readBytes(buffer,howMany);   
-  }
-   if (buffer[0]='p'){ //print
-    printerState=buffer[1];
-    progress=buffer[2];
-    stripNumber=buffer[3];
-    newData=true;
-  }
-    if (buffer[0]='b'){ //bed
-    printerState=buffer[1];
-    temperatureBed=buffer[2]*256+buffer[3];
-    targetBed=buffer[4]*256+buffer[5];
-    maxBed=buffer[6]*256+buffer[7];
-    stripNumber=buffer[8];
-    newData=true;
-  }
-    if (buffer[0]='h'){ //hotend
-    printerState=buffer[1];
-    temperatureHotend=buffer[2]*256+buffer[3];
-    targetHotend=buffer[4]*256+buffer[5];
-    maxBed=buffer[6]*256+buffer[7];
-    maxHotend=buffer[8]*256+buffer[9];
-    stripNumber=buffer[10];
-    newData=true;
-  }
-    if (buffer[0]='c'){ //custom
-    printerState=buffer[1];
-    customWhite=buffer[2];
-    customRed=buffer[3];
-    customGreen=buffer[4];
-    customBlue=buffer[5];
-    customPixel=buffer[6];
-    stripNumber=buffer[7];
-    newData=true;
-  }
-  if (buffer[0]='i'){ //init
-    printerState=buffer[1];
-    maxBed=buffer[2]*256+buffer[3];
-    maxHotend=buffer[4]*256+buffer[5];
-    stripNumber=buffer[6];
-    newData=true;
-  }  
-  if (buffer[0]='s'){ //state
-    printerState=buffer[1];
-    stripNumber=buffer[2];
-    newData=true;
-  }
+    }
+    if (buffer[0]=='p'){ //print
+      printerState=buffer[1];
+      progress=buffer[2];
+      stripNumber=buffer[3];
+      newData=true;
+    }
+    else if (buffer[0]=='b'){ //bed
+      printerState=buffer[1];
+      temperatureBed=buffer[2]*256+buffer[3];
+      targetBed=buffer[4]*256+buffer[5];
+      maxBed=buffer[6]*256+buffer[7];
+      stripNumber=buffer[8];    
+      newData=true;
+    }
+    else if (buffer[0]=='h'){ //hotend
+      printerState=buffer[1];
+      temperatureHotend=buffer[2]*256+buffer[3];
+      targetHotend=buffer[4]*256+buffer[5];
+      maxHotend=buffer[6]*256+buffer[7];
+      stripNumber=buffer[8];
+      newData=true;
+    }
+    else if (buffer[0]=='c'){ //custom
+      printerState=buffer[1];
+      customWhite=buffer[2];
+      customRed=buffer[3];
+      customGreen=buffer[4];
+      customBlue=buffer[5];
+      customPixel=buffer[6];
+      stripNumber=buffer[7];
+      newData=true;
+    }
+    else if (buffer[0]=='i'){ //init
+      printerState=buffer[1];
+      maxBed=buffer[2]*256+buffer[3];
+      maxHotend=buffer[4]*256+buffer[5];
+      stripNumber=buffer[6];
+      newData=true;
+    }  
+    else if (buffer[0]=='s'){ //state
+      printerState=buffer[1];
+      stripNumber=buffer[2];
+      newData=true;
+    }
   int x = Wire.read();    // make sure we get all data
-
 } //receiveEvent
 
 void showProgress(uint8_t currentValue, int targetValue, int maxValue, int rMax, int gMax, int bMax) {

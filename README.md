@@ -32,3 +32,10 @@ For my sketch you will need Adafruit_NeoPixel and NeoPixelBus_by_Makuna library,
 Hey, it's github. Fell free to Fork->Commit->Make pull request :) I'm new to github, so I'll probably be lousy maintainer, but feel free to drop me a message with any suggestion that comes to your mind. 
 
 # All kudos to Marlin Firmware team!
+
+# And a video...
+
+Ok, video is currently messed up, but it shows the idea:) My PID was off because of the bug in Marlin2.0.x branch, and I didn't have enough time to play with it. 
+Also after printing finished the neopixels were suppost to go to "idle" state and not be green. I'lll fix that hopefully soon.
+
+[![Video](https://img.youtube.com/vi/eIrCekOPBOg/0.jpg)](https://www.youtube.com/watch?v=eIrCekOPBOg)
