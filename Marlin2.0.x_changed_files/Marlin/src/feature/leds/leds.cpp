@@ -76,6 +76,9 @@ void LEDLights::set_color(const LEDColor &incol
   #if (ENABLED(NEOPIXEL_LED) || ENABLED(NEOPIXEL_SLAVE_LED))
     , bool isSequence/*=false*/
   #endif
+  #if ENABLED(NEOPIXEL_SLAVE_LED)
+    , uint8_t pixel/*=0*/
+  #endif  
 ) {
 
   #if ENABLED(NEOPIXEL_LED)
@@ -97,29 +100,37 @@ void LEDLights::set_color(const LEDColor &incol
   
   #if ENABLED(NEOPIXEL_SLAVE_LED)
 
-  //const uint32_t neocolor = pixels.Color(incol.r, incol.g, incol.b, incol.w);
-  static uint8_t nextLed = 0;
-
-  if (!isSequence)
-    set_neopixel_color(incol.r, incol.g, incol.b, 
-      #if HAS_WHITE_LED
-        incol.w
-      #else
-        0
-      #endif
-      , 0);
-  else {
-    set_neopixel_pixel(incol.r, incol.g, incol.b, 
-      #if HAS_WHITE_LED
-        incol.w
-      #else
-        0
-      #endif
-      , nextLed, 0);
-    if (++nextLed >= NEOPIXEL_PIXELS) nextLed = 0;
-    return;
-  }
-
+    static uint8_t nextLed = 0;
+    if (pixel==0) {
+      if (!isSequence)
+        set_neopixel_color(incol.r, incol.g, incol.b, 
+          #if HAS_WHITE_LED
+            incol.w
+          #else
+            0
+          #endif
+          , 0);
+      else {
+        set_neopixel_pixel(incol.r, incol.g, incol.b, 
+          #if HAS_WHITE_LED
+            incol.w
+          #else
+            0
+          #endif
+          , nextLed, 0);
+        if (++nextLed >= NEOPIXEL_PIXELS) nextLed = 0;
+        return;
+      }
+    }
+    else {
+      set_neopixel_pixel(incol.r, incol.g, incol.b, 
+        #if HAS_WHITE_LED
+          incol.w
+        #else
+          0
+        #endif
+        , pixel-1, 0);
+    }
   #endif
 
   #if ENABLED(BLINKM)

@@ -125,6 +125,9 @@ public:
     #if (ENABLED(NEOPIXEL_LED) || ENABLED(NEOPIXEL_SLAVE_LED))
       , bool isSequence=false
     #endif
+    #if ENABLED(NEOPIXEL_SLAVE_LED)
+      , uint8_t pixel=0
+    #endif
   );
 
   FORCE_INLINE void set_color(uint8_t r, uint8_t g, uint8_t b
@@ -137,11 +140,17 @@ public:
     #if (ENABLED(NEOPIXEL_LED) || ENABLED(NEOPIXEL_SLAVE_LED))
       , bool isSequence=false
     #endif
+    #if ENABLED(NEOPIXEL_SLAVE_LED)
+      , uint8_t pixel=0
+    #endif
   ) {
     set_color(MakeLEDColor(r, g, b, w, i)
-      #if (ENABLED(NEOPIXEL_LED) || ENABLED(NEOPIXEL_SLAVE_LED))
-        , isSequence
-      #endif
+    #if (ENABLED(NEOPIXEL_LED) || ENABLED(NEOPIXEL_SLAVE_LED))
+      , isSequence
+    #endif
+    #if ENABLED(NEOPIXEL_SLAVE_LED)
+      , pixel
+    #endif
     );
   }
   
