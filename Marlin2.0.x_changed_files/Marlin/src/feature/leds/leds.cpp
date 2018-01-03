@@ -65,7 +65,7 @@ void LEDLights::setup() {
   #endif
   #if ENABLED(NEOPIXEL_SLAVE_LED)
     setup_neopixel_slave(HEATER_0_MAXTEMP, BED_MAXTEMP,0);
-    set_neopixel_state(9,0); 
+    LEDLights::set_state(NEOPIXEL_STATE_IDLE); 
   #endif
   #if ENABLED(LED_USER_PRESET_STARTUP)
     set_default();
@@ -180,6 +180,46 @@ void LEDLights::set_color(const LEDColor &incol
       , p, 0);
   }
 #endif
+
+#if ENABLED(NEOPIXEL_SLAVE_LED)
+  void LEDLights::set_state(uint8_t state, uint16_t currentTemp, uint16_t targetTemp, uint16_t maxTemp){
+    switch (state){
+      case NEOPIXEL_STATE_NULL: //No state from printer
+        set_neopixel_state(NEOPIXEL_STATE_NULL,0);
+        break;
+      case NEOPIXEL_STATE_BED_HEATUP: //Bed heatup
+        set_neopixel_heatbed(currentTemp, targetTemp, maxTemp, 0);
+        break;
+      case NEOPIXEL_STATE_HOTEND_HEATUP: //Hotend heatup
+        set_neopixel_hotend(currentTemp, targetTemp, maxTemp, 0);
+        break;
+      case NEOPIXEL_STATE_PRINTING: //Printing
+        set_neopixel_state(NEOPIXEL_STATE_PRINTING,0);
+        break;
+      case NEOPIXEL_STATE_PRINTING_FINISHED: //Printing finished
+        set_neopixel_state(NEOPIXEL_STATE_PRINTING_FINISHED,0);
+        break;
+      case NEOPIXEL_STATE_PRINTING_PAUSED: //Printing paused
+        set_neopixel_state(NEOPIXEL_STATE_PRINTING_PAUSED,0);
+        break;
+      case NEOPIXEL_STATE_PRINTING_STOPPED: //Printing stopped
+        set_neopixel_state(NEOPIXEL_STATE_PRINTING_STOPPED,0);
+        break;
+      case NEOPIXEL_STATE_CUSTOM_COLOR: //Show custom strip color
+        set_neopixel_state(NEOPIXEL_STATE_CUSTOM_COLOR,0);
+        break;
+      case NEOPIXEL_STATE_CUSTOM_PIXEL_COLOR: //Show custom pixel color
+        set_neopixel_state(NEOPIXEL_STATE_CUSTOM_PIXEL_COLOR,0);
+        break;
+      case NEOPIXEL_STATE_IDLE: //Idle
+        set_neopixel_state(NEOPIXEL_STATE_IDLE,0);
+        break;
+      default:
+        break;
+    };
+  };
+#endif
+  
 
 void LEDLights::set_white() {
   #if ENABLED(RGB_LED) || ENABLED(RGBW_LED) || ENABLED(BLINKM) || ENABLED(PCA9632)

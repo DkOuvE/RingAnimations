@@ -167,6 +167,10 @@ public:
       }
   #endif
   
+  #if ENABLED(NEOPIXEL_SLAVE_LED)
+    static void set_state(uint8_t state, uint16_t currentTemp=0, uint16_t targetTemp=0, uint16_t maxTemp=255);
+  #endif
+  
   static void set_white();
   FORCE_INLINE static void set_off()   { set_color(LEDColorOff()); }
   FORCE_INLINE static void set_green() { set_color(LEDColorGreen()); }

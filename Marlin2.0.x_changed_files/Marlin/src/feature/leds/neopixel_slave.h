@@ -31,15 +31,26 @@
 
 #include <Wire.h>
 
-void setup_neopixel_slave(uint16_t maxTempBed, uint16_t maxTempHotend, uint8_t stripNumber);
-void set_neopixel_color(const uint32_t color, uint8_t stripNumber);
-void set_neopixel_color(const uint8_t red,const uint8_t green, const uint8_t blue, const uint8_t white, uint8_t stripNumber);
-void set_neopixel_pixel(const uint32_t color, uint8_t pixel, uint8_t stripNumber);
-void set_neopixel_pixel(const uint8_t red,const uint8_t green, const uint8_t blue, const uint8_t white, uint8_t pixel, uint8_t stripNumber);
-void set_neopixel_hotend(uint16_t currentTemp,uint16_t targetTemp, uint16_t maxTemp, uint8_t stripNumber);
-void set_neopixel_heatbed(uint16_t currentTemp,uint16_t targetTemp, uint16_t maxTemp, uint8_t stripNumber);
-void set_neopixel_progress(uint8_t progress, uint8_t state, uint8_t stripNumber); 
-void set_neopixel_state(uint8_t state, uint8_t stripNumber); 
+#define NEOPIXEL_STATE_NULL 0
+#define NEOPIXEL_STATE_BED_HEATUP 1
+#define NEOPIXEL_STATE_HOTEND_HEATUP 2
+#define NEOPIXEL_STATE_PRINTING 3
+#define NEOPIXEL_STATE_PRINTING_FINISHED 4
+#define NEOPIXEL_STATE_PRINTING_PAUSED 5
+#define NEOPIXEL_STATE_PRINTING_STOPPED 6
+#define NEOPIXEL_STATE_CUSTOM_COLOR 7
+#define NEOPIXEL_STATE_CUSTOM_PIXEL_COLOR 8
+#define NEOPIXEL_STATE_IDLE 9
+
+void setup_neopixel_slave(uint16_t maxTempBed, uint16_t maxTempHotend, uint8_t stripNumber=0);
+void set_neopixel_color(const uint32_t color, uint8_t stripNumber=0);
+void set_neopixel_color(const uint8_t red, const uint8_t green, const uint8_t blue, const uint8_t white, uint8_t stripNumber=0);
+void set_neopixel_pixel(const uint32_t color, uint8_t pixel, uint8_t stripNumber=0);
+void set_neopixel_pixel(const uint8_t red, const uint8_t green, const uint8_t blue, const uint8_t white, uint8_t pixel, uint8_t stripNumber=0);
+void set_neopixel_hotend(uint16_t currentTemp, uint16_t targetTemp, uint16_t maxTemp, uint8_t stripNumber=0);
+void set_neopixel_heatbed(uint16_t currentTemp, uint16_t targetTemp, uint16_t maxTemp, uint8_t stripNumber=0);
+void set_neopixel_progress(uint8_t progress, uint8_t state, uint8_t stripNumber=0); 
+void set_neopixel_state(uint8_t state, uint8_t stripNumber=0); 
 void send_neopixel_data();
 
 #endif // __NEOPIXEL_SLAVE_H__

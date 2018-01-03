@@ -41,6 +41,7 @@ void setup_neopixel_slave(uint16_t maxTempBed, uint16_t maxTempHotend, uint8_t s
   neopixel_i2c_buffer[5]=lowByte(maxTempHotend);
   neopixel_i2c_buffer_length =6;
   send_neopixel_data();
+  safe_delay(1000);
   
   #if ENABLED(NEOPIXEL_STARTUP_TEST)
     safe_delay(1000);
@@ -61,7 +62,7 @@ void setup_neopixel_slave(uint16_t maxTempBed, uint16_t maxTempHotend, uint8_t s
 
 void set_neopixel_color(const uint32_t color, uint8_t stripNumber) {
   neopixel_i2c_buffer[0]='c';
-  neopixel_i2c_buffer[1]=7;
+  neopixel_i2c_buffer[1]=NEOPIXEL_STATE_CUSTOM_COLOR;
   neopixel_i2c_buffer[2]=((color>>24)&0xFF);
   neopixel_i2c_buffer[3]=((color>>16)&0xFF);
   neopixel_i2c_buffer[4]=((color>>8)&0xFF);
@@ -74,7 +75,7 @@ void set_neopixel_color(const uint32_t color, uint8_t stripNumber) {
 
 void set_neopixel_color(const uint8_t red,const uint8_t green, const uint8_t blue, const uint8_t white, uint8_t stripNumber) {
   neopixel_i2c_buffer[0]='c';
-  neopixel_i2c_buffer[1]=7;
+  neopixel_i2c_buffer[1]=NEOPIXEL_STATE_CUSTOM_COLOR;
   neopixel_i2c_buffer[2]=white;  
   neopixel_i2c_buffer[3]=red;
   neopixel_i2c_buffer[4]=green;
@@ -87,7 +88,7 @@ void set_neopixel_color(const uint8_t red,const uint8_t green, const uint8_t blu
 
 void set_neopixel_pixel(const uint32_t color, uint8_t pixel, uint8_t stripNumber) {
   neopixel_i2c_buffer[0]='c';
-  neopixel_i2c_buffer[1]=8;
+  neopixel_i2c_buffer[1]=NEOPIXEL_STATE_CUSTOM_PIXEL_COLOR;
   neopixel_i2c_buffer[2]=((color>>24)&0xFF);
   neopixel_i2c_buffer[3]=((color>>16)&0xFF);
   neopixel_i2c_buffer[4]=((color>>8)&0xFF);
@@ -100,7 +101,7 @@ void set_neopixel_pixel(const uint32_t color, uint8_t pixel, uint8_t stripNumber
 
 void set_neopixel_pixel(const uint8_t red,const uint8_t green, const uint8_t blue, const uint8_t white, uint8_t pixel, uint8_t stripNumber) {
   neopixel_i2c_buffer[0]='c';
-  neopixel_i2c_buffer[1]=8;
+  neopixel_i2c_buffer[1]=NEOPIXEL_STATE_CUSTOM_PIXEL_COLOR;
   neopixel_i2c_buffer[2]=white;
   neopixel_i2c_buffer[3]=red;
   neopixel_i2c_buffer[4]=green;
@@ -113,7 +114,7 @@ void set_neopixel_pixel(const uint8_t red,const uint8_t green, const uint8_t blu
 
 void set_neopixel_hotend(uint16_t currentTemp,uint16_t targetTemp, uint16_t maxTemp, uint8_t stripNumber){
   neopixel_i2c_buffer[0]='h';
-  neopixel_i2c_buffer[1]=2;
+  neopixel_i2c_buffer[1]=NEOPIXEL_STATE_HOTEND_HEATUP;
   neopixel_i2c_buffer[2]=highByte(currentTemp);
   neopixel_i2c_buffer[3]=lowByte(currentTemp);
   neopixel_i2c_buffer[4]=highByte(targetTemp);
@@ -126,7 +127,7 @@ void set_neopixel_hotend(uint16_t currentTemp,uint16_t targetTemp, uint16_t maxT
 }
 void set_neopixel_heatbed(uint16_t currentTemp,uint16_t targetTemp, uint16_t maxTemp, uint8_t stripNumber){
   neopixel_i2c_buffer[0]='b';
-  neopixel_i2c_buffer[1]=1;
+  neopixel_i2c_buffer[1]=NEOPIXEL_STATE_BED_HEATUP;
   neopixel_i2c_buffer[2]=highByte(currentTemp);
   neopixel_i2c_buffer[3]=lowByte(currentTemp);
   neopixel_i2c_buffer[4]=highByte(targetTemp);
@@ -135,6 +136,7 @@ void set_neopixel_heatbed(uint16_t currentTemp,uint16_t targetTemp, uint16_t max
   neopixel_i2c_buffer[7]=lowByte(maxTemp);
   neopixel_i2c_buffer[8]=stripNumber;
   neopixel_i2c_buffer_length =9;
+
   send_neopixel_data();
 }
 void set_neopixel_progress(uint8_t progress, uint8_t state, uint8_t stripNumber){
@@ -163,12 +165,18 @@ void set_neopixel_state(uint8_t state, uint8_t stripNumber){
   neopixel_i2c_buffer_length =3;
   send_neopixel_data();	
 }
+
+millis_t next_send_delay_ms=0;
 void send_neopixel_data(){
-  Wire.setClock(400000);
-  Wire.begin(); 
-  Wire.beginTransmission(8); // transmit to device #8
-  Wire.write(neopixel_i2c_buffer,neopixel_i2c_buffer_length);        // sends bytes
-  Wire.endTransmission();
+  millis_t now=millis();
+  if (ELAPSED(now, next_send_delay_ms)) { 
+    next_send_delay_ms = now + 50UL;
+    Wire.setClock(400000);
+    Wire.begin(); 
+    Wire.beginTransmission(8); // transmit to device #8
+    Wire.write(neopixel_i2c_buffer,neopixel_i2c_buffer_length);        // sends bytes
+    Wire.endTransmission();
+  }
 }
 
 #endif // NEOPIXEL_LED
