@@ -3,6 +3,10 @@
  * Read README at:
  * https://github.com/GarrethX/NeopixelMarlinSlave
  * 
+ * Version 0.2
+ *  - Breathing effect added
+ *  - Smoothed transitions a little bit
+ *  
  * Version 0.1
  *  - Initial release
  *  
@@ -161,7 +165,9 @@ void receiveEvent(int howMany) {
   int i=0;
   bool status=false;
   char c;
-  Serial.println("Reading...");
+  #ifdef DEBUG
+    Serial.println("Reading...");
+  #endif
   while(Wire.available()) { // loop through all but the last
     Wire.readBytes(buffer,howMany);   
     }
@@ -212,9 +218,11 @@ void receiveEvent(int howMany) {
   int x = Wire.read();    // make sure we get all data
 } //receiveEvent
 
+int lastFadeG, lastFadeB, lastFadeR;
+
 void showProgress(uint8_t currentValue, int targetValue, int maxValue, int rMax, int gMax, int bMax) {
-  int lastFadeG, lastFadeB, lastFadeR;
-  int tmpFadeG, tmpFadeB, tmpFadeR;
+ 
+  int tmpFadeG=0, tmpFadeB=0, tmpFadeR=0;
   if (newData){  
     int resolution=maxValue/PixelCount;
     
@@ -224,21 +232,21 @@ void showProgress(uint8_t currentValue, int targetValue, int maxValue, int rMax,
     }
     
     for (uint16_t pixel = 0; pixel <= PixelCount-1; pixel++) { //Show progress
+
       if (currentValue>=(pixel*resolution)) {   // Set pixes to full intensity when they should be fully lit
         strip.SetPixelColor(pixel, RgbColor(rMax,gMax,bMax)); 
       }
-      else if (currentValue<(pixel*resolution)){ // Smoothly set pixel to intermediate value
-        
+      else if (currentValue<(pixel*resolution)){ // Smoothly set pixel to intermediate value    
         int fadeG=map((currentValue%resolution),0,(resolution-1),0,gMax);
         int fadeR=map((currentValue%resolution),0,(resolution-1),0,rMax);
         int fadeB=map((currentValue%resolution),0,(resolution-1),0,bMax);
         if (lastFadeG>fadeG) { lastFadeG=0;}
         if (lastFadeB>fadeB) { lastFadeB=0;}
         if (lastFadeR>fadeR) { lastFadeR=0;}
-        for (int i=0;i>=20;i++){
-          tmpFadeG=((fadeG-lastFadeG)/20)*i+lastFadeG;
-          tmpFadeB=((fadeG-lastFadeB)/20)*i+lastFadeB;
-          tmpFadeR=((fadeG-lastFadeR)/20)*i+lastFadeR;
+        for (int i=0;i<=50;i++){
+          tmpFadeG=((fadeG-lastFadeG)*i)/50+lastFadeG;
+          tmpFadeB=((fadeB-lastFadeB)*i)/50+lastFadeB;
+          tmpFadeR=((fadeR-lastFadeR)*i)/50+lastFadeR;
         strip.SetPixelColor(pixel-1, RgbColor(tmpFadeR,tmpFadeG,tmpFadeB));
         delay(5);  //Smoothing time is (delay + time to set pixel)*number of loop iterations, don't make this time too long, or there will be problems with receiving data
         }
